@@ -6,6 +6,7 @@ import os.path
 import logging.config
 
 from presence_analyzer.main import app
+import presence_analyzer.views
 
 
 if __name__ == "__main__":
