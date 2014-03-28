@@ -53,6 +53,47 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(len(data), 2)
         self.assertDictEqual(data[0], {u'user_id': 10, u'name': u'User 10'})
 
+    def test_mean_time_weekday_view(self):
+        """
+        Test mean time by weekday view
+        """
+        resp = self.client.get('/api/v1/mean_time_weekday/10')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+        data = json.loads(resp.data)
+        self.assertEqual(len(data), 7)
+        self.assertItemsEqual(data, [
+            [u'Mon', 0],
+            [u'Tue', 30047.0],
+            [u'Wed', 24465.0],
+            [u'Thu', 23705.0],
+            [u'Fri', 0],
+            [u'Sat', 0],
+            [u'Sun', 0]
+            ]
+        )
+
+    def test_presence_weekday_view(self):
+        """
+        Test presence by weekday view
+        """
+        resp = self.client.get('/api/v1/presence_weekday/10')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+        data = json.loads(resp.data)
+        self.assertEqual(len(data), 8)
+        self.assertItemsEqual(data, [
+            [u'Weekday', u'Presence (s)'],
+            [u'Mon', 0],
+            [u'Tue', 30047],
+            [u'Wed', 24465],
+            [u'Thu', 23705],
+            [u'Fri', 0],
+            [u'Sat', 0],
+            [u'Sun', 0]
+            ]
+        )
+
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
     """
@@ -83,6 +124,66 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         self.assertItemsEqual(data[10][sample_date].keys(), ['start', 'end'])
         self.assertEqual(data[10][sample_date]['start'],
                          datetime.time(9, 39, 5))
+
+    def test_group_by_weekday(self):
+        """
+        Test grouping by weekday.
+        """
+        data = utils.get_data()
+
+        result = utils.group_by_weekday(data[10])
+        self.assertItemsEqual(result, {
+            0: [],
+            1: [30047],
+            2: [24465],
+            3: [23705],
+            4: [],
+            5: [],
+            6: []
+            }
+        )
+
+    def test_seconds_since_midnight(self):
+        """
+        Test calculating time that passed since midnight
+        """
+        result = utils.seconds_since_midnight(datetime.time(9, 10, 15))
+        self.assertEqual(result, 33015)
+
+        result = utils.seconds_since_midnight(datetime.time(0, 0, 0))
+        self.assertEqual(result, 0)
+
+        result = utils.seconds_since_midnight(datetime.time(12, 10, 15))
+        self.assertEqual(result, 43815)
+
+    def test_interval(self):
+        """
+        Test calculating interval between times
+        """
+        result = utils.interval(datetime.time(9, 10, 15),
+                                datetime.time(9, 10, 20))
+        self.assertEqual(result, 5)
+
+        result = utils.interval(datetime.time(7, 11, 15),
+                                datetime.time(9, 10, 20))
+        self.assertEqual(result, 7145)
+
+        result = utils.interval(datetime.time(7, 11, 15),
+                                datetime.time(19, 00, 00))
+        self.assertEqual(result, 42525)
+
+    def test_mean(self):
+        """
+        Test calculating mean
+        """
+        result = utils.mean([1, 2, 3, 4, 5])
+        self.assertEqual(result, 3)
+
+        result = utils.mean([1, 2, 3, 4])
+        self.assertEqual(result, 2.5)
+
+        result = utils.mean([])
+        self.assertEqual(result, 0)
 
 
 def suite():
