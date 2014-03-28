@@ -95,8 +95,6 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         )
 
 
-
-
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
     """
     Utility functions tests.
@@ -152,6 +150,12 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         result = utils.seconds_since_midnight(datetime.time(9, 10, 15))
         self.assertEqual(result, 33015)
 
+        result = utils.seconds_since_midnight(datetime.time(0, 0, 0))
+        self.assertEqual(result, 0)
+
+        result = utils.seconds_since_midnight(datetime.time(12, 10, 15))
+        self.assertEqual(result, 43815)
+
     def test_interval(self):
         """
         Test calculating interval between times
@@ -160,14 +164,24 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
                                 datetime.time(9, 10, 20))
         self.assertEqual(result, 5)
 
+        result = utils.interval(datetime.time(7, 11, 15),
+                                datetime.time(9, 10, 20))
+        self.assertEqual(result, 7145)
+
+        result = utils.interval(datetime.time(7, 11, 15),
+                                datetime.time(19, 00, 00))
+        self.assertEqual(result, 42525)
+
     def test_mean(self):
         """
         Test calculating mean
         """
         result = utils.mean([1, 2, 3, 4, 5])
         self.assertEqual(result, 3)
+
         result = utils.mean([1, 2, 3, 4])
         self.assertEqual(result, 2.5)
+
         result = utils.mean([])
         self.assertEqual(result, 0)
 
