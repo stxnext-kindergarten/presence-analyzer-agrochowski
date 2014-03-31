@@ -94,6 +94,25 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
             ]
         )
 
+    def test_presence_start_end_view(self):
+        """
+        Test presence start, end view
+        """
+        resp = self.client.get('/api/v1/presence_start_end/10')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+        data = json.loads(resp.data)
+        self.assertEqual(data, [
+            [u'Mon', 0, 0],
+            [u'Tue', 34745.0, 64792.0],
+            [u'Wed', 33592.0, 58057.0],
+            [u'Thu', 38926.0, 62631.0],
+            [u'Fri', 0, 0],
+            [u'Sat', 0, 0],
+            [u'Sun', 0, 0]
+            ]
+        )
+
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
     """
@@ -184,6 +203,32 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
 
         result = utils.mean([])
         self.assertEqual(result, 0)
+
+    def test_group_start_end_by_weekday(self):
+        """
+        Test grouping starts and ends by weekday
+        """
+        data = utils.get_data()
+
+        result = utils.group_start_end_by_weekday(data[10])
+        self.assertEqual(result, {
+            0: {'end': [], 'start': []},
+            1: {
+                'end': [datetime.time(17, 59, 52)],
+                'start': [datetime.time(9, 39, 5)]
+                },
+            2: {
+                'end': [datetime.time(16, 7, 37)],
+                'start': [datetime.time(9, 19, 52)]
+                },
+            3: {
+                'end': [datetime.time(17, 23, 51)],
+                'start': [datetime.time(10, 48, 46)]
+                },
+            4: {'end': [], 'start': []},
+            5: {'end': [], 'start': []},
+            6: {'end': [], 'start': []}}
+        )
 
 
 def suite():
