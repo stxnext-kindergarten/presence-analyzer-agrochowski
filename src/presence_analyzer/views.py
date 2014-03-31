@@ -7,9 +7,13 @@ import calendar
 from flask import redirect
 
 from presence_analyzer.main import app
-from presence_analyzer.utils import jsonify, get_data, mean, group_by_weekday,
-seconds_since_midnight,
-group_start_end_by_weekday
+from presence_analyzer.utils import (
+    jsonify,
+    get_data,
+    mean, group_by_weekday,
+    seconds_since_midnight,
+    group_start_end_by_weekday
+)
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
