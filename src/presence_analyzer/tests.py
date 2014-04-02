@@ -102,6 +102,7 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
         data = json.loads(resp.data)
+        self.assertEqual(len(data), 7)
         self.assertEqual(data, [
             [u'Mon', 0, 0],
             [u'Tue', 34745.0, 64792.0],
@@ -211,7 +212,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         data = utils.get_data()
 
         result = utils.group_start_end_by_weekday(data[10])
-        self.assertEqual(result, {
+        self.assertDictContainsSubset(result, {
             0: {'end': [], 'start': []},
             1: {
                 'end': [datetime.time(17, 59, 52)],

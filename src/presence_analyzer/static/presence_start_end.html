@@ -102,7 +102,6 @@
                         loading.show();
                         chart_div.hide();
                         
-                        // some dummy data, this should go from API
                         $.getJSON("/api/v1/presence_start_end/"+selected_user, function(result) {
                             $.each(result, function(index, value) {
                                 value[1] = parseInterval(value[1]);
