@@ -76,7 +76,7 @@
     <script src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
-        google.load("visualization", "1", {packages:["corechart"], 'language': 'pl'});
+        google.load("visualization", "1", {packages:["corechart", "timeline"], 'language': 'pl'});
     </script>
     <script type="text/javascript">
         function parseInterval(value) {
@@ -84,7 +84,6 @@
             result.setMilliseconds(value*1000);
             return result;
         }
-
         (function($) {
             $(document).ready(function(){
                 var loading = $('#loading');
@@ -102,25 +101,27 @@
                     if(selected_user) {
                         loading.show();
                         chart_div.hide();
-                        $.getJSON("/api/v1/mean_time_weekday/"+selected_user, function(result) {
+                        
+                        $.getJSON("/api/v1/presence_start_end/"+selected_user, function(result) {
                             $.each(result, function(index, value) {
                                 value[1] = parseInterval(value[1]);
+                                value[2] = parseInterval(value[2]);
                             });
-                            console.log(result);
                             var data = new google.visualization.DataTable();
                             data.addColumn('string', 'Weekday');
-                            data.addColumn('datetime', 'Mean time (h:m:s)');
+                            data.addColumn({ type: 'datetime', id: 'Start' });
+                            data.addColumn({ type: 'datetime', id: 'End' });
                             data.addRows(result);
                             var options = {
                                 hAxis: {title: 'Weekday'}
                             };
                             var formatter = new google.visualization.DateFormat({pattern: 'HH:mm:ss'});
                             formatter.format(data, 1);
+                            formatter.format(data, 2);
 
-                            
                             chart_div.show();
                             loading.hide();
-                            var chart = new google.visualization.ColumnChart(chart_div[0]);
+                            var chart = new google.visualization.Timeline(chart_div[0]);
                             chart.draw(data, options);
                         });
                     }
@@ -137,12 +138,12 @@
             
             <ul>
                 <li><a href="/static/presence_weekday.html">Presence by weekday</a></li>
-                <li id="selected"><a href="/static/mean_time_weekday.html">Presence mean time</a></li>
-                <li><a href="/static/presence_start_end.html">Presence start-end</a></li>
+                <li><a href="/static/mean_time_weekday.html">Presence mean time</a></li>
+                <li id="selected"><a href="/static/presence_start_end.html">Presence start-end</a></li>
             </ul>
         </div>
         <div id="content">
-            <h2>Presence mean time by weekday</h2>
+            <h2>Presence start-end weekday</h2>
             <p>
                 <select id="user_id" style="display: none">
                     <option value="">--</option>
