@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from .main import app
+from . import views
 """
-Init
+Initialize the package
 """
