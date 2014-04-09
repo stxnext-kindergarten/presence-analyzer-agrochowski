@@ -4,9 +4,9 @@ Defines views.
 """
 
 import calendar
-from flask import redirect, url_for
-
-from jinja2 import Environment, PackageLoader
+from flask import redirect
+from flask.ext.mako import MakoTemplates
+from flask.ext.mako import render_template
 from presence_analyzer.main import app
 from presence_analyzer.utils import (
     jsonify,
@@ -16,11 +16,9 @@ from presence_analyzer.utils import (
     group_start_end_by_weekday
 )
 
-
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
-env = Environment(loader=PackageLoader('presence_analyzer', 'templates'))
-env.globals = {'url_for': url_for}
+mako = MakoTemplates(app)
 
 
 @app.route('/')
@@ -36,8 +34,8 @@ def presence_start_end_template():
     """
     Generates template for presence_start_end view
     """
-    view = env.get_template('presence_start_end.html')
-    return view.render(index='Presence start-end')
+    return render_template('presence_start_end.html',
+                           index='Presence start-end')
 
 
 @app.route('/templates/mean_time_weekday')
@@ -45,8 +43,8 @@ def mean_time_weekday_template():
     """
     Generates template for mean_time_weekday view
     """
-    view = env.get_template('mean_time_weekday.html')
-    return view.render(index='Presence mean time')
+    return render_template('mean_time_weekday.html',
+                           index='Presence mean time')
 
 
 @app.route('/templates/presence_weekday')
@@ -54,8 +52,8 @@ def presence_weekday_template():
     """
     Generates template for presence_weekday view
     """
-    view = env.get_template('presence_weekday.html')
-    return view.render(index='Presence by weekday')
+    return render_template('presence_weekday.html',
+                           index='Presence by weekday')
 
 
 @app.route('/api/v1/users', methods=['GET'])
