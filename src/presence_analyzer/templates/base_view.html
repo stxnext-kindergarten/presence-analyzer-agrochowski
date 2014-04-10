@@ -1,16 +1,10 @@
 <%
     navigation = [
-        (url_for("presence_weekday_template"),
-         "Presence by weekday",
-         "Presence by weekday"),
-        (url_for("mean_time_weekday_template"),
-         "Presence mean time",
-         "Presence mean time by weekday"),
-        (url_for("presence_start_end_template"),
-         "Presence start-end",
-         "Presence start-end by weekday")
+        (url_for("presence_weekday_template"), "Presence by weekday"),
+        (url_for("mean_time_weekday_template"), "Presence mean time"),
+        (url_for("presence_start_end_template"), "Presence start-end")
     ]
-    title="base";
+    index="base";
 %>
 <!doctype html>
 <html lang=en>
@@ -34,9 +28,9 @@
         <div id="header">
             <h1>Presence analyzer</h1>
             <ul>
-            % for url, index, title in navigation:
+            % for url, index in navigation:
                 <li 
-                % if title == self.attr.title:
+                % if index == self.attr.index:
                     id="selected"
                 % endif
                 ><a href=${url}>${index}</a></li>
@@ -44,7 +38,9 @@
             </ul>
         </div>
         <div id="content">
-            <%block name="header_title"/>
+            <h2>
+                <%block name="header_title"/>
+            </h2>
             <p>
                 <select id="user_id" style="display: none">
                     <option value="">--</option>
