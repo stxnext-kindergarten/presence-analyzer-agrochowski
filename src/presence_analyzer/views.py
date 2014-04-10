@@ -7,6 +7,8 @@ import calendar
 from flask import redirect
 from flask.ext.mako import MakoTemplates
 from flask.ext.mako import render_template
+from flask.helpers import make_response
+from mako.exceptions import TopLevelLookupException
 from presence_analyzer.main import app
 from presence_analyzer.utils import (
     jsonify,
@@ -34,7 +36,10 @@ def template_handler(template):
     """
     Handles generating templates.
     """
-    return render_template('{}.html'.format(template))
+    try:
+        return render_template(template+'.html')
+    except TopLevelLookupException:
+        return make_response('This page does not exist', 404)
 
 
 @app.route('/api/v1/users', methods=['GET'])
