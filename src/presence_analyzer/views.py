@@ -34,8 +34,7 @@ def presence_start_end_template():
     """
     Generates template for presence_start_end view
     """
-    return render_template('presence_start_end.html',
-                           index='Presence start-end')
+    return render_template('presence_start_end.html')
 
 
 @app.route('/templates/mean_time_weekday')
@@ -43,8 +42,7 @@ def mean_time_weekday_template():
     """
     Generates template for mean_time_weekday view
     """
-    return render_template('mean_time_weekday.html',
-                           index='Presence mean time')
+    return render_template('mean_time_weekday.html')
 
 
 @app.route('/templates/presence_weekday')
@@ -52,8 +50,7 @@ def presence_weekday_template():
     """
     Generates template for presence_weekday view
     """
-    return render_template('presence_weekday.html',
-                           index='Presence by weekday')
+    return render_template('presence_weekday.html')
 
 
 @app.route('/api/v1/users', methods=['GET'])

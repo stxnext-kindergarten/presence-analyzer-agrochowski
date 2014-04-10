@@ -1,5 +1,5 @@
 <%inherit file="base_view.html"/>
-<%! index = "Presence mean time by weekday" %>
+<%! title="Presence mean time by weekday" %>
 <%block name="head">
     <script type="text/javascript">
         google.load("visualization", "1", {packages:["corechart"], 'language': 'pl'});
@@ -48,4 +48,7 @@
             });
         })(jQuery);
     </script>
+</%block>
+<%block name="header_title">
+    <h2>Presence mean time by weekday</h2>
 </%block>
