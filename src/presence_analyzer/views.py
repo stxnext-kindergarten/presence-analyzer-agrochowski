@@ -4,9 +4,11 @@ Defines views.
 """
 
 import calendar
-from flask import redirect, url_for
-
-from jinja2 import Environment, PackageLoader
+from flask import redirect
+from flask.ext.mako import MakoTemplates
+from flask.ext.mako import render_template
+from flask.helpers import make_response
+from mako.exceptions import TopLevelLookupException
 from presence_analyzer.main import app
 from presence_analyzer.utils import (
     jsonify,
@@ -16,11 +18,9 @@ from presence_analyzer.utils import (
     group_start_end_by_weekday
 )
 
-
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
-env = Environment(loader=PackageLoader('presence_analyzer', 'templates'))
-env.globals = {'url_for': url_for}
+mako = MakoTemplates(app)
 
 
 @app.route('/')
@@ -31,31 +31,15 @@ def mainpage():
     return redirect('/templates/presence_weekday')
 
 
-@app.route('/templates/presence_start_end')
-def presence_start_end_template():
+@app.route('/templates/<string:template>')
+def template_handler(template):
     """
-    Generates template for presence_start_end view
+    Handles generating templates.
     """
-    view = env.get_template('presence_start_end.html')
-    return view.render(index='Presence start-end')
-
-
-@app.route('/templates/mean_time_weekday')
-def mean_time_weekday_template():
-    """
-    Generates template for mean_time_weekday view
-    """
-    view = env.get_template('mean_time_weekday.html')
-    return view.render(index='Presence mean time')
-
-
-@app.route('/templates/presence_weekday')
-def presence_weekday_template():
-    """
-    Generates template for presence_weekday view
-    """
-    view = env.get_template('presence_weekday.html')
-    return view.render(index='Presence by weekday')
+    try:
+        return render_template(template+'.html')
+    except TopLevelLookupException:
+        return make_response('This page does not exist', 404)
 
 
 @app.route('/api/v1/users', methods=['GET'])

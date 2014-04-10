@@ -1,10 +1,11 @@
-{%
-set navigation = [
-    (url_for('presence_weekday_template'), 'Presence by weekday'),
-    (url_for('mean_time_weekday_template'), 'Presence mean time'),
-    (url_for('presence_start_end_template'), 'Presence start-end')
-]
-%}
+<%
+    navigation = [
+        (url_for("template_handler", template="presence_weekday"), "Presence by weekday"),
+        (url_for("template_handler", template="mean_time_weekday"), "Presence mean time"),
+        (url_for("template_handler", template="presence_start_end"), "Presence start-end")
+    ]
+    index="base";
+%>
 <!doctype html>
 <html lang=en>
 <head>
@@ -15,27 +16,31 @@ set navigation = [
     <meta name="author" content="STX Next sp. z o.o."/>
     <meta name="viewport" content="width=device-width; initial-scale=1.0">
     
-    <link href="{{ url_for('static', filename='css/normalize.css') }}" media="all" rel="stylesheet" type="text/css" />
-    <link href="{{ url_for('static', filename='css/views_style.css') }}" media="all" rel="stylesheet" type="text/css" />
+    <link href=${url_for('static', filename='css/normalize.css')} media="all" rel="stylesheet" type="text/css" />
+    <link href=${url_for('static', filename='css/views_style.css')} media="all" rel="stylesheet" type="text/css" />
 
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src=${url_for('static', filename='js/jquery.min.js')}></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    {% block head %}{% endblock %}
+    <%block name="head"/>
 </head>
 <body>
     <div id="main">
         <div id="header">
             <h1>Presence analyzer</h1>
             <ul>
-            {% for url, title in navigation %}
-                <li {% if title == index %}id="selected"{% endif %}>
-                    <a href="{{ url }}">{{ title }}</a>
-                </li>
-            {% endfor %}
+            % for url, index in navigation:
+                <li 
+                % if index == self.attr.index:
+                    id="selected"
+                % endif
+                ><a href=${url}>${index}</a></li>
+            % endfor
             </ul>
         </div>
         <div id="content">
-            <h2>{% block name %}{% endblock %}</h2>
+            <h2>
+                <%block name="header_title"/>
+            </h2>
             <p>
                 <select id="user_id" style="display: none">
                     <option value="">--</option>
@@ -43,7 +48,7 @@ set navigation = [
                 <div id="chart_div" style="display: none">
                 </div>
                 <div id="loading">
-                    <img src="{{ url_for('static', filename='img/loading.gif') }}" />
+                    <img src=${url_for('static', filename='img/loading.gif')} />
                 </div>
             </p>
         </div>

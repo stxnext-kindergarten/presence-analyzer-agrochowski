@@ -1,5 +1,6 @@
-{% extends "base_view.html" %}
-{% block head %}
+<%inherit file="base_view.html"/>
+<%! index="Presence by weekday" %>
+<%block name="head">
     <script type="text/javascript">
         google.load("visualization", "1", {packages:["corechart"], 'language': 'en'});
 
@@ -33,5 +34,7 @@
             });
         })(jQuery);
     </script>
-{% endblock %}
-{% block name %}Presence by weekday{% endblock %}
+</%block>
+<%block name="header_title">
+    Presence by weekday
+</%block>

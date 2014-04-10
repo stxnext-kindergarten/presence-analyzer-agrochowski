@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Startup utilities"""
-#pylint:skip-file
+# pylint:skip-file
 
 import os
 import sys

@@ -1,9 +1,10 @@
-{% extends "base_view.html" %}
-{% block head %}
+<%inherit file="base_view.html"/>
+<%! index="Presence start-end" %>
+<%block name="head">
     <script type="text/javascript">
         google.load("visualization", "1", {packages:["corechart", "timeline"], 'language': 'pl'});
     </script>
-    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src=${url_for('static', filename='js/utils.js')}></script>
     <script type="text/javascript">
         (function($) {
             $(document).ready(function(){
@@ -50,5 +51,7 @@
             });
         })(jQuery);
     </script>
-{% endblock %}
-{% block name %}Presence start-end by weekday{% endblock %}
+</%block>
+<%block name="header_title">
+    Presence start-end by weekday
+</%block>
