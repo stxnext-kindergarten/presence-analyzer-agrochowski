@@ -7,7 +7,6 @@ import csv
 from json import dumps
 from functools import wraps
 from datetime import datetime
-import time
 
 from flask import Response
 
