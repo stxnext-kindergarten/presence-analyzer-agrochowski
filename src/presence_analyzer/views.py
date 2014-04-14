@@ -4,6 +4,8 @@ Defines views.
 """
 
 import calendar
+from flask import url_for
+from lxml import etree
 from flask import redirect
 from flask.ext.mako import MakoTemplates
 from flask.ext.mako import render_template
@@ -18,9 +20,24 @@ from presence_analyzer.utils import (
     group_start_end_by_weekday
 )
 
+
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 mako = MakoTemplates(app)
+data = etree.parse('/home/agrochowski/Pulpit/presence-analyzer-agrochowski/src/presence_analyzer/static/data/users_info.xml').getroot()
+users_info = {}
+server = ''
+
+for users in data:
+    for user in users:
+        if 'id' in user.attrib.keys():
+            user_id = int(user.attrib['id'])
+            users_info[user_id] = {'avatar': '', 'name': ''}
+            for info in user:
+                if info.tag == 'avatar':
+                    users_info[user_id]['avatar'] = info.text
+                elif info.tag == 'name':
+                    users_info[user_id]['name'] = unicode(info.text)
 
 
 @app.route('/')
@@ -29,6 +46,15 @@ def mainpage():
     Redirects to front page.
     """
     return redirect('/templates/presence_weekday')
+
+
+@app.route('/api/v1/get_photo/<int:user_id>', methods=['GET'])
+@jsonify
+def get_photo(user_id):
+    """
+    Returns user's photo url
+    """
+    return users_info[user_id]['avatar']
 
 
 @app.route('/templates/<string:template>')
@@ -49,7 +75,9 @@ def users_view():
     Users listing for dropdown.
     """
     data = get_data()
-    return [{'user_id': i, 'name': 'User {0}'.format(str(i))}
+    return [{'user_id': i, 'name': users_info[i]['name']}
+            if i in users_info.keys()
+            else {'user_id': i, 'name': 'Unknown user: {}'.format(i)}
             for i in data.keys()]
 
 
