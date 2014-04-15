@@ -4,14 +4,15 @@ Defines views.
 """
 
 import calendar
+from presence_analyzer.main import app
 from flask import url_for
 from lxml import etree
 from flask import redirect
+from flask import Flask
 from flask.ext.mako import MakoTemplates
 from flask.ext.mako import render_template
 from flask.helpers import make_response
 from mako.exceptions import TopLevelLookupException
-from presence_analyzer.main import app
 from presence_analyzer.utils import (
     jsonify,
     get_data,
@@ -19,25 +20,40 @@ from presence_analyzer.utils import (
     seconds_since_midnight,
     group_start_end_by_weekday
 )
+import os.path
 
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 mako = MakoTemplates(app)
-data = etree.parse('/home/agrochowski/Pulpit/presence-analyzer-agrochowski/src/presence_analyzer/static/data/users_info.xml').getroot()
-users_info = {}
-server = ''
 
-for users in data:
-    for user in users:
-        if 'id' in user.attrib.keys():
-            user_id = int(user.attrib['id'])
-            users_info[user_id] = {'avatar': '', 'name': ''}
-            for info in user:
-                if info.tag == 'avatar':
-                    users_info[user_id]['avatar'] = info.text
-                elif info.tag == 'name':
-                    users_info[user_id]['name'] = unicode(info.text)
+
+users_info = {}
+server = {'host': '', 'port': '', 'protocol': ''}
+
+@app.before_first_request
+def get_urls(*args, **kwargs):
+    XML_file = etree.parse(
+        os.path.abspath(
+            'src/presence_analyzer/' + url_for('static', filename='data/users_info.xml')
+            )
+        ).getroot()
+    
+    for data_type in XML_file:
+        for data in data_type:
+            # Parse users info.
+            if data_type.tag == 'users':
+                user_id = int(data.attrib['id'])
+                users_info[user_id] = {'avatar': '', 'name': ''}
+                for info in data:
+                    if info.tag == 'avatar':
+                        users_info[user_id]['avatar'] = info.text
+                    elif info.tag == 'name':
+                        users_info[user_id]['name'] = unicode(info.text)
+            # Parse server info.
+            elif data_type.tag == 'server':
+                server[data.tag] = data.text
+
 
 
 @app.route('/')
@@ -54,7 +70,12 @@ def get_photo(user_id):
     """
     Returns user's photo url
     """
-    return users_info[user_id]['avatar']
+    return "{protocol}://{host}:{port}{avatar}".format(
+            protocol=server['protocol'],
+            host=server['host'],
+            port=server['port'],
+            avatar=users_info[user_id]['avatar']
+        )
 
 
 @app.route('/templates/<string:template>')
