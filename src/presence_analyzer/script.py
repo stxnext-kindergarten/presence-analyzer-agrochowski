@@ -9,6 +9,8 @@ from functools import partial
 import paste.script.command
 import werkzeug.script
 
+import urllib2
+
 etc = partial(os.path.join, 'parts', 'etc')
 
 DEPLOY_INI = etc('deploy.ini')
@@ -111,3 +113,12 @@ def run():
         _serve('stop', dry_run=dry_run)
 
     werkzeug.script.run()
+
+
+def get_users_data():
+    req = urllib2.Request('http://sargo.bolt.stxnext.pl/users.xml')
+    XML = urllib2.urlopen(req)
+
+    XML_file = open('runtime/data/users_info.xml', 'w')
+    XML_file.write(XML.read())
+    XML_file.close()
