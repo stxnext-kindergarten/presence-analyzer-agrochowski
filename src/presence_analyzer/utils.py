@@ -38,7 +38,7 @@ def parse_data(*args, **kwargs):
                     elif info.tag == 'name':
                         USERS_INFO[user_id]['name'] = unicode(info.text)
             # Parse SERVER info.
-            elif data_type.tag == 'SERVER':
+            elif data_type.tag == 'server':
                 SERVER[data.tag] = data.text
 
 
