@@ -21,9 +21,9 @@ def get_data_xml():
     """
     xml_file = etree.parse(app.config['DATA_XML']).getroot()
     server = {
-        'host': xml_file.find('.//host').text,
-        'port': xml_file.find('.//port').text,
-        'protocol': xml_file.find('.//protocol').text
+        'host': xml_file.findtext('.//host'),
+        'port': xml_file.findtext('.//port'),
+        'protocol': xml_file.findtext('.//protocol')
     }
 
     users_xml = {
@@ -32,9 +32,9 @@ def get_data_xml():
             'avatar': "{}://{}{}".format(
                 server['protocol'],
                 server['host'],
-                user.find('avatar').text
+                user.findtext('avatar')
             ),
-            'name': user.find('name').text
+            'name': user.findtext('name')
         }
         for user in xml_file.findall('.//user')
     }
