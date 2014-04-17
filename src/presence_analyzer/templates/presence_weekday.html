@@ -3,14 +3,17 @@
 <%block name="head">
     <script type="text/javascript">
         google.load("visualization", "1", {packages:["corechart"], 'language': 'en'});
-
+    </script>
+    <script type="text/javascript">
         (function($) {
             $(document).ready(function(){
                 var loading = $('#loading');
-                $.getJSON("/api/v1/users", function(result) {
+                var users = {};
+                $.getJSON("/api/v2/users", function(result) {
                     var dropdown = $("#user_id");
                     $.each(result, function(item) {
                         dropdown.append($("<option />").val(this.user_id).text(this.name));
+                        users[this.user_id] = this;
                     });
                     dropdown.show();
                     loading.hide();
@@ -18,17 +21,28 @@
                 $('#user_id').change(function(){
                     var selected_user = $("#user_id").val();
                     var chart_div = $('#chart_div');
+                    var avatar = $('#avatar');
                     if(selected_user) {
                         loading.show();
                         chart_div.hide();
+                        avatar.hide();
                         $.getJSON("/api/v1/presence_weekday/"+selected_user, function(result) {
-                            var data = google.visualization.arrayToDataTable(result);
-                            var options = {};
-                            chart_div.show();
-                            loading.hide();
-                            var chart = new google.visualization.PieChart(chart_div[0]);
-                            chart.draw(data, options);
+                            if(result.length > 0) {
+                                $('#avatar').attr('src', users[selected_user].avatar);
+                                var data = google.visualization.arrayToDataTable(result);
+                                var options = {};
+                                chart_div.show();
+                                loading.hide();
+                                avatar.show();
+                                var chart = new google.visualization.PieChart(chart_div[0]);
+                                chart.draw(data, options);
+                            } else {
+                                chart_div.text('NO DATA FOR THIS USER');
+                                chart_div.show();
+                                loading.hide();
+                            }
                         });
+
                     }
                 });
             });

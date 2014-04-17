@@ -7,13 +7,39 @@ import csv
 from json import dumps
 from functools import wraps
 from datetime import datetime
-
+from lxml import etree
 from flask import Response
-
 from presence_analyzer.main import app
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
+
+
+def get_data_xml():
+    """
+    Parses data from XML file (server and users info).
+    """
+    xml_file = etree.parse(app.config['DATA_XML']).getroot()
+    server = {
+        'host': xml_file.findtext('.//host'),
+        'port': xml_file.findtext('.//port'),
+        'protocol': xml_file.findtext('.//protocol')
+    }
+
+    users_xml = {
+        user.attrib['id']: {
+            'user_id': user.attrib['id'],
+            'avatar': "{}://{}{}".format(
+                server['protocol'],
+                server['host'],
+                user.findtext('avatar')
+            ),
+            'name': user.findtext('name')
+        }
+        for user in xml_file.findall('.//user')
+    }
+
+    return users_xml
 
 
 def jsonify(function):

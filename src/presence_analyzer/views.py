@@ -4,19 +4,21 @@ Defines views.
 """
 
 import calendar
+from presence_analyzer.main import app
 from flask import redirect
 from flask.ext.mako import MakoTemplates
 from flask.ext.mako import render_template
 from flask.helpers import make_response
 from mako.exceptions import TopLevelLookupException
-from presence_analyzer.main import app
 from presence_analyzer.utils import (
     jsonify,
     get_data,
     mean, group_by_weekday,
     seconds_since_midnight,
-    group_start_end_by_weekday
+    group_start_end_by_weekday,
+    get_data_xml
 )
+
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
@@ -51,6 +53,15 @@ def users_view():
     data = get_data()
     return [{'user_id': i, 'name': 'User {0}'.format(str(i))}
             for i in data.keys()]
+
+
+@app.route('/api/v2/users', methods=['GET'])
+@jsonify
+def users_view_xml():
+    """
+    Users listing for dropdown (from XML).
+    """
+    return get_data_xml()
 
 
 @app.route('/api/v1/mean_time_weekday/<int:user_id>', methods=['GET'])
