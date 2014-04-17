@@ -16,8 +16,7 @@ from presence_analyzer.utils import (
     mean, group_by_weekday,
     seconds_since_midnight,
     group_start_end_by_weekday,
-    USERS_XML,
-    add_avatar
+    get_data_xml
 )
 
 
@@ -51,16 +50,11 @@ def users_view():
     """
     Users listing for dropdown.
     """
-    data = get_data()
-    return [{'user_id': i, 'name': USERS_XML[i]['name']}
-            if i in USERS_XML.keys()
-            else {'user_id': i, 'name': 'Unknown user: {}'.format(i)}
-            for i in data.keys()]
+    return get_data_xml()
 
 
 @app.route('/api/v1/mean_time_weekday/<int:user_id>', methods=['GET'])
 @jsonify
-@add_avatar
 def mean_time_weekday_view(user_id):
     """
     Returns mean presence time of given user grouped by weekday.
@@ -79,7 +73,6 @@ def mean_time_weekday_view(user_id):
 
 @app.route('/api/v1/presence_weekday/<int:user_id>', methods=['GET'])
 @jsonify
-@add_avatar
 def presence_weekday_view(user_id):
     """
     Returns total presence time of given user grouped by weekday.
@@ -99,7 +92,6 @@ def presence_weekday_view(user_id):
 
 @app.route('/api/v1/presence_start_end/<int:user_id>', methods=['GET'])
 @jsonify
-@add_avatar
 def presence_start_end_view(user_id):
     """
     Returns mean start and end time of work for user

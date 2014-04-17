@@ -6,21 +6,9 @@
         <protocol>https</protocol>
     </server>
     <users>
-        <user id="141">
+        <user id="10">
             <avatar>/api/images/users/141</avatar>
             <name>Adam P.</name>
-        </user>
-        <user id="176">
-            <avatar>/api/images/users/176</avatar>
-            <name>Adrian K.</name>
-        </user>
-        <user id="170">
-            <avatar>/api/images/users/170</avatar>
-            <name>Agata J.</name>
-        </user>
-        <user id="26">
-            <avatar>/api/images/users/26</avatar>
-            <name>Andrzej S.</name>
         </user>
     </users>
 </intranet>
