@@ -15,7 +15,7 @@ from presence_analyzer.main import app
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 
-USERS_INFO = {}
+USERS_XML = {}
 SERVER = {'host': '', 'port': '', 'protocol': ''}
 
 
@@ -31,12 +31,12 @@ def parse_data(*args, **kwargs):
             # Parse users info.
             if data_type.tag == 'users':
                 user_id = int(data.attrib['id'])
-                USERS_INFO[user_id] = {'avatar': '', 'name': ''}
+                USERS_XML[user_id] = {'avatar': '', 'name': ''}
                 for info in data:
                     if info.tag == 'avatar':
-                        USERS_INFO[user_id]['avatar'] = info.text
+                        USERS_XML[user_id]['avatar'] = info.text
                     elif info.tag == 'name':
-                        USERS_INFO[user_id]['name'] = unicode(info.text)
+                        USERS_XML[user_id]['name'] = unicode(info.text)
             # Parse SERVER info.
             elif data_type.tag == 'server':
                 SERVER[data.tag] = data.text
@@ -51,11 +51,11 @@ def add_avatar(function):
         result = {'data': [], 'avatar': ''}
         result['data'] = function(*args, **kwargs)
         user_id = kwargs['user_id']
-        if user_id in USERS_INFO:
+        if user_id in USERS_XML:
             result['avatar'] = "{protocol}://{host}{avatar}".format(
                 protocol=SERVER['protocol'],
                 host=SERVER['host'],
-                avatar=USERS_INFO[user_id]['avatar']
+                avatar=USERS_XML[user_id]['avatar']
                 )
         else:
             result['avatar'] = url_for('static', filename='img/no_avatar.png')

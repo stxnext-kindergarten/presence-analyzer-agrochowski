@@ -130,8 +130,8 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         """
         resp = self.client.get('/')
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(len(utils.USERS_INFO), 4)
-        self.assertDictEqual(utils.USERS_INFO, {
+        self.assertEqual(len(utils.USERS_XML), 4)
+        self.assertDictEqual(utils.USERS_XML, {
             26: {'avatar': '/api/images/users/26', 'name': u'Andrzej S.'},
             141: {'avatar': '/api/images/users/141', 'name': u'Adam P.'},
             170: {'avatar': '/api/images/users/170', 'name': u'Agata J.'},

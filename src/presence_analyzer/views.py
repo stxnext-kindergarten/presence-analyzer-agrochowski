@@ -16,7 +16,7 @@ from presence_analyzer.utils import (
     mean, group_by_weekday,
     seconds_since_midnight,
     group_start_end_by_weekday,
-    USERS_INFO,
+    USERS_XML,
     add_avatar
 )
 
@@ -52,8 +52,8 @@ def users_view():
     Users listing for dropdown.
     """
     data = get_data()
-    return [{'user_id': i, 'name': USERS_INFO[i]['name']}
-            if i in USERS_INFO.keys()
+    return [{'user_id': i, 'name': USERS_XML[i]['name']}
+            if i in USERS_XML.keys()
             else {'user_id': i, 'name': 'Unknown user: {}'.format(i)}
             for i in data.keys()]
 
