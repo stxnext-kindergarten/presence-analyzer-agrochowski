@@ -6,9 +6,13 @@
         <protocol>https</protocol>
     </server>
     <users>
-        <user id="10">
+        <user id="141">
             <avatar>/api/images/users/141</avatar>
             <name>Adam P.</name>
+        </user>
+        <user id="176">
+            <avatar>/api/images/users/176</avatar>
+            <name>Adrian K.</name>
         </user>
     </users>
 </intranet>

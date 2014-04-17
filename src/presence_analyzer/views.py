@@ -50,6 +50,17 @@ def users_view():
     """
     Users listing for dropdown.
     """
+    data = get_data()
+    return [{'user_id': i, 'name': 'User {0}'.format(str(i))}
+            for i in data.keys()]
+
+
+@app.route('/api/v2/users', methods=['GET'])
+@jsonify
+def users_view_xml():
+    """
+    Users listing for dropdown (from XML).
+    """
     return get_data_xml()
 
 

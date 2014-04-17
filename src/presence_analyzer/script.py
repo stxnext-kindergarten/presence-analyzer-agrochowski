@@ -116,7 +116,7 @@ def run():
 
 
 def get_users_data():
-    req = urllib2.Request('http://sargo.bolt.stxnext.pl/users.xml')
+    req = urllib2.Request(app.config['USERS'])
     XML = urllib2.urlopen(req)
 
     XML_file = open('runtime/data/users_info.xml', 'w')

@@ -16,7 +16,7 @@ TEST_DATA_CSV = os.path.join(
 
 TEST_DATA_XML = os.path.join(
     os.path.dirname(__file__),
-    '..', '..', 'runtime', 'data', 'users_info_test.xml'
+    '..', '..', 'runtime', 'data', 'users_test.xml'
 )
 
 
@@ -52,20 +52,20 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         """
         Test users listing.
         """
-        resp = self.client.get('/api/v1/users')
+        resp = self.client.get('/api/v2/users')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
         data = json.loads(resp.data)
         self.assertEqual(len(data), 2)
         print data
         self.assertDictEqual(data, {
-            u'11': {
-                u'user_id': u'11',
-                u'avatar': u'/static/img/no_avatar.png',
-                u'name': u'Unknown user: 11'
+            u'176': {
+                u'user_id': u'176',
+                u'avatar': u'https://intranet.stxnext.pl/api/images/users/176',
+                u'name': u'Adrian K.'
                 },
-            u'10': {
-                u'user_id': u'10',
+            u'141': {
+                u'user_id': u'141',
                 u'avatar': u'https://intranet.stxnext.pl/api/images/users/141',
                 u'name': u'Adam P.'
                 }

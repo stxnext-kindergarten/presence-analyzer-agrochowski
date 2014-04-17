@@ -9,7 +9,7 @@
             $(document).ready(function(){
                 var loading = $('#loading');
                 var users = {};
-                $.getJSON("/api/v1/users", function(result) {
+                $.getJSON("/api/v2/users", function(result) {
                     var dropdown = $("#user_id");
                     $.each(result, function(item) {
                         dropdown.append($("<option />").val(this.user_id).text(this.name));
@@ -27,14 +27,20 @@
                         chart_div.hide();
                         avatar.hide();
                         $.getJSON("/api/v1/presence_weekday/"+selected_user, function(result) {
-                            $('#avatar').attr('src', users[selected_user].avatar);
-                            var data = google.visualization.arrayToDataTable(result);
-                            var options = {};
-                            chart_div.show();
-                            loading.hide();
-                            avatar.show();
-                            var chart = new google.visualization.PieChart(chart_div[0]);
-                            chart.draw(data, options);
+                            if(result.length > 0) {
+                                $('#avatar').attr('src', users[selected_user].avatar);
+                                var data = google.visualization.arrayToDataTable(result);
+                                var options = {};
+                                chart_div.show();
+                                loading.hide();
+                                avatar.show();
+                                var chart = new google.visualization.PieChart(chart_div[0]);
+                                chart.draw(data, options);
+                            } else {
+                                chart_div.text('NO DATA FOR THIS USER');
+                                chart_div.show();
+                                loading.hide();
+                            }
                         });
 
                     }

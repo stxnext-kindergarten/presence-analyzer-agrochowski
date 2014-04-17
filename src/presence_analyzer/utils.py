@@ -9,52 +9,35 @@ from functools import wraps
 from datetime import datetime
 from lxml import etree
 from flask import Response
-from flask import url_for
 from presence_analyzer.main import app
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 
 
-def get_data_xml(*args, **kwargs):
+def get_data_xml():
     """
     Parses data from XML file (server and users info).
     """
-    users = get_data()
     xml_file = etree.parse(app.config['DATA_XML']).getroot()
-    users_xml = {}
-    server = {'host': '', 'port': '', 'protocol': ''}
+    server = {
+        'host': xml_file.find('.//host').text,
+        'port': xml_file.find('.//port').text,
+        'protocol': xml_file.find('.//protocol').text
+    }
 
-    for data_type in xml_file:
-        for data in data_type:
-            # Parse users info.
-            if data_type.tag == 'users':
-                user_id = data.attrib['id']
-                users_xml[user_id] = {
-                    'user_id': user_id,
-                    'avatar': '',
-                    'name': ''
-                }
-                for info in data:
-                    if info.tag == 'avatar':
-                        users_xml[user_id]['avatar'] = "{}://{}{}".format(
-                            server['protocol'],
-                            server['host'],
-                            info.text
-                        )
-                    elif info.tag == 'name':
-                        users_xml[user_id]['name'] = unicode(info.text)
-            # Parse SERVER info.
-            elif data_type.tag == 'server':
-                server[data.tag] = data.text
-
-    for user_id in users:
-        if str(user_id) not in users_xml:
-            users_xml[str(user_id)] = {
-                'user_id': str(user_id),
-                'avatar': url_for('static', filename='img/no_avatar.png'),
-                'name': u'Unknown user: {}'.format(str(user_id))
-            }
+    users_xml = {
+        user.attrib['id']: {
+            'user_id': user.attrib['id'],
+            'avatar': "{}://{}{}".format(
+                server['protocol'],
+                server['host'],
+                user.find('avatar').text
+            ),
+            'name': user.find('name').text
+        }
+        for user in xml_file.findall('.//user')
+    }
 
     return users_xml
 
