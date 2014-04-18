@@ -21,6 +21,9 @@ LOCKER = Lock()
 
 
 def locker(fun):
+    """
+    Locks thread.
+    """
     def _locker():
         with LOCKER:
             return fun()
@@ -28,6 +31,9 @@ def locker(fun):
 
 
 def cache(duration):
+    """
+    Caches function result for given amount of time (in seconds).
+    """
     def _cache(fun):
         @locker
         def __cache():
