@@ -30,20 +30,19 @@ def locker(fun):
     return _locker
 
 
-def cache(duration):
+def cache(duration, key):
     """
     Caches function result for given amount of time (in seconds).
     """
     def _cache(fun):
-        @locker
         def __cache():
-            if (fun.__name__ not in CACHE or
-               cur_time() > CACHE[fun.__name__]['time']):
-                CACHE[fun.__name__] = {
+            if (key not in CACHE or
+               cur_time() > CACHE[key]['time']):
+                CACHE[key] = {
                     'data': fun(),
                     'time': cur_time()+duration
                 }
-            return CACHE[fun.__name__]['data']
+            return CACHE[key]['data']
         return __cache
     return _cache
 
@@ -86,7 +85,8 @@ def jsonify(function):
     return inner
 
 
-@cache(600)
+@locker
+@cache(600, 0)
 def get_data():
     """
     Extracts presence data from CSV file and groups it by user_id.
