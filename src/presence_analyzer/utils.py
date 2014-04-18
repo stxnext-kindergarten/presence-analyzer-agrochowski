@@ -10,7 +10,7 @@ from datetime import datetime
 from lxml import etree
 from flask import Response
 from presence_analyzer.main import app
-import time
+from time import time as cur_time
 import threading
 
 import logging
@@ -22,13 +22,13 @@ CACHE_LOCKER = threading.Lock()
 
 def cache(duration):
     def _cache(fun):
-        def __cache(*args, **kwargs):
+        def __cache():
             with CACHE_LOCKER:
                 if (fun.__name__ not in CACHE or
-                   time.time()-CACHE[fun.__name__]['time'] > duration):
+                   cur_time()-CACHE[fun.__name__]['time'] > duration):
                     CACHE[fun.__name__] = {
-                        'data': fun(*args, **kwargs),
-                        'time': time.time()
+                        'data': fun(),
+                        'time': cur_time()
                     }
                 return CACHE[fun.__name__]['data']
         return __cache
