@@ -11,26 +11,33 @@ from lxml import etree
 from flask import Response
 from presence_analyzer.main import app
 from time import time as cur_time
-import threading
+from threading import Lock
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
 
 CACHE = {}
-CACHE_LOCKER = threading.Lock()
+LOCKER = Lock()
+
+
+def locker(fun):
+    def _locker():
+        with LOCKER:
+            return fun()
+    return _locker
 
 
 def cache(duration):
     def _cache(fun):
+        @locker
         def __cache():
-            with CACHE_LOCKER:
-                if (fun.__name__ not in CACHE or
-                   cur_time()-CACHE[fun.__name__]['time'] > duration):
-                    CACHE[fun.__name__] = {
-                        'data': fun(),
-                        'time': cur_time()
-                    }
-                return CACHE[fun.__name__]['data']
+            if (fun.__name__ not in CACHE or
+               cur_time() > CACHE[fun.__name__]['time']):
+                CACHE[fun.__name__] = {
+                    'data': fun(),
+                    'time': cur_time()+duration
+                }
+            return CACHE[fun.__name__]['data']
         return __cache
     return _cache
 
