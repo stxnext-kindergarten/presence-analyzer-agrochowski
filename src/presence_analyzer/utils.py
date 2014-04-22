@@ -4,6 +4,7 @@ Helper functions used in views.
 """
 
 import csv
+import locale
 from json import dumps
 from functools import wraps
 from datetime import datetime
@@ -66,10 +67,20 @@ def get_data_xml():
                 server['host'],
                 user.findtext('avatar')
             ),
-            'name': user.findtext('name')
+            'name': unicode(user.findtext('name'))
         }
         for user in xml_file.findall('.//user')
     }
+
+    locale.setlocale(locale.LC_ALL, 'pl_PL.utf-8')
+    users_xml = sorted(
+        users_xml.iteritems(),
+        cmp=lambda user1, user2: locale.strcoll(
+            user1[1]['name'],
+            user2[1]['name']
+        )
+    )
+    locale.setlocale(locale.LC_ALL, (None, None))
 
     return users_xml
 
@@ -86,7 +97,7 @@ def jsonify(function):
 
 
 @locker
-@cache(600, 0)
+@cache(1, 0)
 def get_data():
     """
     Extracts presence data from CSV file and groups it by user_id.
