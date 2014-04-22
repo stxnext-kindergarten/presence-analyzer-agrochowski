@@ -10,9 +10,41 @@ from datetime import datetime
 from lxml import etree
 from flask import Response
 from presence_analyzer.main import app
+from time import time as cur_time
+from threading import Lock
 
 import logging
 log = logging.getLogger(__name__)  # pylint: disable-msg=C0103
+
+CACHE = {}
+LOCKER = Lock()
+
+
+def locker(fun):
+    """
+    Locks thread.
+    """
+    def _locker():
+        with LOCKER:
+            return fun()
+    return _locker
+
+
+def cache(duration, key):
+    """
+    Caches function result for given amount of time (in seconds).
+    """
+    def _cache(fun):
+        def __cache():
+            if (key not in CACHE or
+               cur_time() > CACHE[key]['time']):
+                CACHE[key] = {
+                    'data': fun(),
+                    'time': cur_time()+duration
+                }
+            return CACHE[key]['data']
+        return __cache
+    return _cache
 
 
 def get_data_xml():
@@ -53,6 +85,8 @@ def jsonify(function):
     return inner
 
 
+@locker
+@cache(600, 0)
 def get_data():
     """
     Extracts presence data from CSV file and groups it by user_id.

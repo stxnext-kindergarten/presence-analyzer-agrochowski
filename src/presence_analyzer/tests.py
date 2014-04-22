@@ -14,6 +14,11 @@ TEST_DATA_CSV = os.path.join(
     os.path.dirname(__file__), '..', '..', 'runtime', 'data', 'test_data.csv'
 )
 
+TEST_CACHE_DATA_CSV1 = os.path.join(
+    os.path.dirname(__file__),
+    '..', '..', 'runtime', 'data', 'test_data_cache1.csv'
+)
+
 TEST_DATA_XML = os.path.join(
     os.path.dirname(__file__),
     '..', '..', 'runtime', 'data', 'users_test.xml'
@@ -143,6 +148,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        utils.CACHE = {}
 
     def tearDown(self):
         """
@@ -248,6 +254,19 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
             5: {'end': [], 'start': []},
             6: {'end': [], 'start': []}}
         )
+
+    def test_get_data_cache(self):
+        data = utils.get_data()
+        self.assertDictEqual(data, utils.CACHE[0]['data'])
+
+        main.app.config.update({'DATA_CSV': TEST_CACHE_DATA_CSV1})
+        data = utils.get_data()
+        self.assertDictEqual(data, utils.CACHE[0]['data'])
+
+        utils.CACHE = {}
+
+        data = utils.get_data()
+        self.assertDictEqual(data, utils.CACHE[0]['data'])
 
 
 def suite():
